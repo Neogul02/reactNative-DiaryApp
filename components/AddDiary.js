@@ -54,7 +54,7 @@ const AddDiary = ({ entries, setEntries, goPage, profileImageUrl }) => {
 
                 <View style={styles.profileContainer}>
                     <Image source={profileImageUrl ? { uri: profileImageUrl } : require('../assets/dog.jpeg')} style={styles.profileImage} />
-                    <Text style={styles.resultText}>땡칠이의 한마디: {result}</Text>
+                    <Text style={styles.resultText}>아바타의 한마디: {result}</Text>
                 </View>
             </View>
         </TouchableWithoutFeedback>

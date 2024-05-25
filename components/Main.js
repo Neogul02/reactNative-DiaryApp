@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Button, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 export default function Main({ goPage, setProfileImageUrl }) {
     const [profileImageUrl, setLocalProfileImageUrl] = useState('');
@@ -10,23 +12,46 @@ export default function Main({ goPage, setProfileImageUrl }) {
         setProfileImageUrl(url);
     };
 
+    const selectImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const uri = result.assets[0].uri;
+            convertToBase64(uri);
+        }
+    };
+
+    const convertToBase64 = async (uri) => {
+        try {
+            const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+            const base64Url = `data:image/jpeg;base64,${base64}`;
+            handleUrlChange(base64Url);
+        } catch (error) {
+            console.error('Error converting image to Base64:', error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <MaterialCommunityIcons name='book' size={94} color='tomato' style={styles.icon} />
             </View>
-            
+
             <View style={styles.section1}>
                 <Text style={styles.centerText}>이 프로그램은 일기를 작성하고</Text>
                 <Text style={styles.centerText}>일기 내용을 기반으로 원하는 카테고리를 골라</Text>
                 <Text style={styles.centerText}>일기내용에 알맞게 추천 받는 프로그램입니다.</Text>
                 <Text></Text>
-                <TextInput
-                    style={styles.urlInput}
-                    placeholder="이미지 URL을 입력하세요"
-                    value={profileImageUrl}
-                    onChangeText={handleUrlChange}
-                />
+                <TextInput style={styles.urlInput} placeholder='이미지 URL을 입력하세요' value={profileImageUrl} onChangeText={handleUrlChange} />
+                <TouchableOpacity onPress={selectImage} style={styles.button}>
+                    <Text style={styles.buttonText}>이미지 선택</Text>
+                </TouchableOpacity>
+                {profileImageUrl ? <Image source={{ uri: profileImageUrl }} style={styles.imagePreview} /> : null}
                 <Text style={styles.centerText}>원하는 아바타의 이미지 URL을 입력해보세요!</Text>
             </View>
 
@@ -118,5 +143,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 10,
         padding: 10,
+    },
+    imagePreview: {
+        width: 100,
+        height: 100,
+        marginTop: 10,
+        marginBottom: 10,
+        textAlign: 'center',
     },
 });
