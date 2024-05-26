@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, Alert, Image } from 'react-native';
 import { chat } from '../openai';
 import axios from 'axios';
+import MoodSelector from './MoodSelector'; // Import the MoodSelector component
 
 const AddDiary = ({ entries, setEntries, goPage, profileImageUrl }) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [date, setDate] = useState(getDate());
     const [result, setResult] = useState('반가워~!');
+    const [selectedMood, setSelectedMood] = useState(null); // Add state for selected mood
 
     function getDate() {
         const currentDate = new Date();
@@ -16,13 +18,14 @@ const AddDiary = ({ entries, setEntries, goPage, profileImageUrl }) => {
 
     const handleAddDiary = async () => {
         try {
-            await axios.post('https://expodiary-vuhiy.run.goorm.site/posts', { title, content, date });
+            await axios.post('https://expodiary-vuhiy.run.goorm.site/posts', { title, content, date, mood: selectedMood }); // Include mood in the post request
 
             const userPrompt = `당신은 사용자가 쓴 일기를 바탕으로 사용자에게 도움이 되는 내용을 한 줄로 간단하게 이야기해주는 강아지 챗봇입니다. 강아지가 말하는 것 같은 말투를 사용하면 좋습니다. 말끝마다 멍을 붙인다던지
         (일기 제목과 내용을 보고 위로를 해준다거나 사용자가 필요로 할 만한 정보를 알려준다거나 추천해주는 듯한 내용을 작성해주세요.
         사용자의 일기 내용: 
         제목 : ${title} 
-        내용 : ${content} )`;
+        내용 : ${content} 
+        기분 : ${selectedMood})`; // Include mood in the prompt
 
             chat(userPrompt, (result) => setResult(result));
 
@@ -30,7 +33,7 @@ const AddDiary = ({ entries, setEntries, goPage, profileImageUrl }) => {
             setEntries(response.data);
 
             setDate(getDate());
-            Alert.alert('알림', `${title}일기가 추가되었습니다.`, [{ text: '확인' }]);
+            Alert.alert('알림', `${title} 일기가 추가되었습니다.`, [{ text: '확인' }]);
         } catch (error) {
             console.error('Error adding diary entry:', error.message);
         }
@@ -47,11 +50,11 @@ const AddDiary = ({ entries, setEntries, goPage, profileImageUrl }) => {
                 <ScrollView style={styles.contentInputContainer}>
                     <TextInput style={styles.contentInput} onChangeText={(value) => setContent(value)} value={content} placeholder='내용' multiline numberOfLines={10} />
                 </ScrollView>
-
+                <MoodSelector selectedMood={selectedMood} setSelectedMood={setSelectedMood} />
+                {/* Integrate the MoodSelector component */}
                 <TouchableOpacity style={styles.addButton} onPress={handleAddDiary}>
                     <Text style={{ color: 'white' }}>추가</Text>
                 </TouchableOpacity>
-
                 <View style={styles.profileContainer}>
                     <Image source={profileImageUrl ? { uri: profileImageUrl } : require('../assets/dog.jpeg')} style={styles.profileImage} />
                     <Text style={styles.resultText}>아바타의 한마디: {result}</Text>
@@ -93,6 +96,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         marginBottom: 10,
+        fontSize: 18,
     },
     contentInputContainer: {
         height: 200,
@@ -102,6 +106,7 @@ const styles = StyleSheet.create({
     },
     contentInput: {
         flex: 1,
+        fontSize: 18,
     },
     resultText: {
         flex: 1,

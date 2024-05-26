@@ -11,6 +11,7 @@ export default function App() {
     const [[page, param], setCurrent] = useState(['Main', {}]); // 현재 페이지
     const [entries, setEntries] = useState([]); // DB
     const [profileImageUrl, setProfileImageUrl] = useState(''); // Profile Image URL State
+    const [selectedMood, setSelectedMood] = useState(null); // 기분 선택 상태 추가
 
     useEffect(() => {
         getEntries();
@@ -33,7 +34,7 @@ export default function App() {
         <View style={{ flex: 1 }}>
             {page === 'Main' && <Main goPage={goPage} setProfileImageUrl={setProfileImageUrl} />}
             {page === 'List' && <DiaryList entries={entries} setEntries={setEntries} goPage={goPage} />}
-            {page === 'Diary' && <AddDiary entries={entries} setEntries={setEntries} goPage={goPage} profileImageUrl={profileImageUrl} />}
+            {page === 'Diary' && <AddDiary entries={entries} setEntries={setEntries} goPage={goPage} profileImageUrl={profileImageUrl} selectedMood={selectedMood} setSelectedMood={setSelectedMood} />}
             {page === 'Read' && param.id && <ReadDiary entry={entries.find((entry) => entry.id === param.id)} profileImageUrl={profileImageUrl} />}
 
             <View style={styles.header}>
@@ -48,7 +49,7 @@ export default function App() {
                     <TouchableOpacity onPress={() => goPage('Main')} style={styles.footerButton}>
                         <AntDesign name='home' size={24} color='tomato' />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => goPage('Diary', { profileImageUrl })} style={styles.footerButton}>
+                    <TouchableOpacity onPress={() => goPage('Diary')} style={styles.footerButton}>
                         <MaterialCommunityIcons name='book-edit-outline' size={24} color='tomato' />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => goPage('List')} style={styles.footerButton}>

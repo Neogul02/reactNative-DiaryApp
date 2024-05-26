@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Image, Linking, TextInput, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Image, Linking, TextInput, Keyboard, StyleSheet } from 'react-native';
 import { chat } from '../openai';
 
 import dog from '../assets/dog.jpeg';
@@ -53,14 +53,15 @@ const ReadDiary = ({ entry, profileImageUrl }) => {
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View style={{ margin: 15, top: 70 }}>
+            <View style={styles.container}>
                 <Text>제목: {entry.title}</Text>
                 <Text>날짜: {entry.date}</Text>
                 <Text>내용: {entry.content}</Text>
+                {entry.mood && <Text>기분: {entry.mood}</Text>}
 
-                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                        style={{ padding: 10, backgroundColor: 'lightblue', marginRight: 10 }}
+                        style={[styles.button, { backgroundColor: 'lightblue' }]}
                         onPress={() => {
                             setResult('음식을 추천받고 싶구나!'); // 임시 결과
                             handleReadDiary('음식');
@@ -69,7 +70,7 @@ const ReadDiary = ({ entry, profileImageUrl }) => {
                         <Text>음식</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={{ padding: 10, backgroundColor: 'lightgreen', marginRight: 10 }}
+                        style={[styles.button, { backgroundColor: 'lightgreen' }]}
                         onPress={() => {
                             setResult('음악을 추천받고 싶구나!');
                             handleReadDiary('음악');
@@ -78,7 +79,7 @@ const ReadDiary = ({ entry, profileImageUrl }) => {
                         <Text>음악</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={{ padding: 10, backgroundColor: 'lightcoral', marginRight: 10 }}
+                        style={[styles.button, { backgroundColor: 'lightcoral' }]}
                         onPress={() => {
                             setResult('영화를 추천받고 싶구나!');
                             handleReadDiary('영화');
@@ -87,10 +88,10 @@ const ReadDiary = ({ entry, profileImageUrl }) => {
                         <Text>영화</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                    <TextInput placeholder='아바타에게 추천받고 싶은 것을 입력하세요' style={{ flex: 1, fontSize: 15, marginRight: 10 }} onChangeText={(text) => setCategory(text)} />
+                <View style={styles.inputContainer}>
+                    <TextInput placeholder='아바타에게 추천받고 싶은 것을 입력하세요' style={styles.textInput} onChangeText={(text) => setCategory(text)} />
                     <TouchableOpacity
-                        style={{ padding: 10, backgroundColor: 'lightblue' }}
+                        style={[styles.button, { backgroundColor: 'lightblue' }]}
                         onPress={() => {
                             setResult(`${category}을 추천받고 싶구나!`);
                             handleReadDiary(category);
@@ -100,42 +101,38 @@ const ReadDiary = ({ entry, profileImageUrl }) => {
                     </TouchableOpacity>
                 </View>
 
-                {/* AI의 추천 결과 표시 */}
-                <Image source={profileImageUrl ? { uri: profileImageUrl } : require('../assets/dog.jpeg')} style={{ width: 50, height: 50, borderRadius: 25, marginTop: 10 }} />
-                <Text style={{ marginTop: 10, fontSize: 18 }}>아바타의 한마디: </Text>
+                <Image source={profileImageUrl ? { uri: profileImageUrl } : dog} style={styles.profileImage} />
+                <Text style={styles.avatarText}>아바타의 한마디: </Text>
                 <Text>{result}</Text>
 
-                {/* 음식 제목이 추천된 경우에만 YouTube 링크 표시 */}
                 {titles.length > 0 && category === '음식' && (
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>추천된 음식 링크:</Text>
+                    <View style={styles.linkContainer}>
+                        <Text style={styles.linkTitle}>추천된 음식 링크:</Text>
                         {titles.map((title, index) => (
                             <TouchableOpacity key={index} onPress={() => searchYouTube(title)}>
-                                <Text style={{ color: 'red', textDecorationLine: 'underline', margin: 8 }}>{title}</Text>
+                                <Text style={[styles.link, { color: 'red' }]}>{title}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 )}
 
-                {/* 음악 제목이 추천된 경우에만 YouTube 링크 표시 */}
                 {titles.length > 0 && category === '음악' && (
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>추천된 음악 링크:</Text>
+                    <View style={styles.linkContainer}>
+                        <Text style={styles.linkTitle}>추천된 음악 링크:</Text>
                         {titles.map((title, index) => (
                             <TouchableOpacity key={index} onPress={() => searchYouTube(title)}>
-                                <Text style={{ color: 'green', textDecorationLine: 'underline', margin: 8 }}>{title}</Text>
+                                <Text style={[styles.link, { color: 'green' }]}>{title}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 )}
 
-                {/* 영화 제목이 추천된 경우에만 다음 영화 링크 표시 */}
                 {titles.length > 0 && category === '영화' && (
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>추천된 영화 링크:</Text>
+                    <View style={styles.linkContainer}>
+                        <Text style={styles.linkTitle}>추천된 영화 링크:</Text>
                         {titles.map((title, index) => (
                             <TouchableOpacity key={index} onPress={() => openDaumMoviePage(title)}>
-                                <Text style={{ color: 'blue', textDecorationLine: 'underline', margin: 8 }}>{title}</Text>
+                                <Text style={[styles.link, { color: 'blue' }]}>{title}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -144,5 +141,51 @@ const ReadDiary = ({ entry, profileImageUrl }) => {
         </TouchableWithoutFeedback>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        margin: 15,
+        top: 70,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+    },
+    button: {
+        padding: 10,
+        marginRight: 10,
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    textInput: {
+        flex: 1,
+        fontSize: 18,
+        marginRight: 10,
+    },
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginTop: 10,
+    },
+    avatarText: {
+        marginTop: 10,
+        fontSize: 18,
+    },
+    linkContainer: {
+        marginTop: 10,
+    },
+    linkTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    link: {
+        textDecorationLine: 'underline',
+        margin: 8,
+    },
+});
 
 export default ReadDiary;
