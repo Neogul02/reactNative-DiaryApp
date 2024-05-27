@@ -3,7 +3,7 @@ import axios from 'axios'
 const chat = async (prompt, onMessage) => {
     const headers = {  
             "Content-Type": "application/json",
-            Authorization: "Bearer sk-",
+            Authorization: "Bearer sk- USER_API_KEY",
     }
     const messages = [{ role: 'user', content: prompt }]
 
@@ -12,7 +12,7 @@ const chat = async (prompt, onMessage) => {
         "https://api.openai.com/v1/chat/completions",
         {
         
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o",
           temperature: 0.5,
           messages: messages          
         }, {headers, timeout:40000}

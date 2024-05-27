@@ -20,7 +20,7 @@ const AddDiary = ({ entries, setEntries, goPage, profileImageUrl }) => {
         try {
             await axios.post('https://expodiary-vuhiy.run.goorm.site/posts', { title, content, date, mood: selectedMood }); // Include mood in the post request
 
-            const userPrompt = `당신은 사용자가 쓴 일기를 바탕으로 사용자에게 도움이 되는 내용을 한 줄로 간단하게 이야기해주는 강아지 챗봇입니다. 강아지가 말하는 것 같은 말투를 사용하면 좋습니다. 말끝마다 멍을 붙인다던지
+            const userPrompt = `당신은 사용자가 쓴 일기를 바탕으로 사용자에게 도움이 되는 내용을 한 줄로 간단하게 이야기해주는 챗봇입니다.
         (일기 제목과 내용을 보고 위로를 해준다거나 사용자가 필요로 할 만한 정보를 알려준다거나 추천해주는 듯한 내용을 작성해주세요.
         사용자의 일기 내용: 
         제목 : ${title} 
